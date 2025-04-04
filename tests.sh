@@ -3,14 +3,13 @@
 URL="https://petstore.swagger.io/v2"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
 NO_COLOR='\033[0m'
 
 DeletePetReturnsDeletedIdAndOkStatus() {
 	local response
 	local deletedId
 
-	response=$(curl -K .curlrc --fail-with-body -o DeletePetReturnsDeletedIdAndOkStatus.json -X GET \
+	response=$(curl -K .curlrc --fail-with-body -o DeletePetReturnsDeletedIdAndOkStatus.json -X DELETE \
 		"$URL/pet/1")
 	
 	deletedId=$(cat < DeletePetReturnsDeletedIdAndOkStatus.json | jq -r '.message')
@@ -29,7 +28,7 @@ FindPetByIdReturnsNotFoundStatusAndMessage() {
 	local responseMessage
 
 	response=$(curl -K .curlrc --fail-with-body -o FindPetByIdReturnsNotFoundStatusAndMessage.json -X GET \
-		"$URL/pet/0")
+		"$URL/pet/1")
 
 	responseMessage=$(cat < FindPetByIdReturnsNotFoundStatusAndMessage.json | jq -r '.message')
 
@@ -63,8 +62,9 @@ AddPetReturnsPetObjectAndOkStatus() {
 			')
 
 	petName=$(cat < AddPetReturnsPetObjectAndOkStatus.json | jq -r '.name')
+	petId=$(cat < AddPetReturnsPetObjectAndOkStatus.json | jq -r '.id')
 
-	if [[ ! "$response" == "200" && ! "$petName" == "Petsi dawg" ]]; then
+	if [[ ! "$response" == "200" && ! "$petName" == "Petsi dawg" && ! "$petId" == "1" ]]; then
 		echo -e "${RED}AddPetReturnsPetObjectAndOkStatus test failed${NO_COLOR}"
 		return 1
 	fi
